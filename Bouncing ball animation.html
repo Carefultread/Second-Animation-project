@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Bouncing Colorful Ball</title>
+<style>
+  body, html {
+    margin: 0; 
+    padding: 0; 
+    overflow: hidden; 
+    background: #111;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+  canvas {
+    background: #222;
+    border-radius: 10px;
+    box-shadow: 0 0 15px #0ff,inset 0 0 15px #0ff;
+  }
+ 
+
+</style>
+</head>
+<body>
+<canvas id="canvas" width="350" height="400"></canvas>
+<script>
+  const canvas = document.getElementById('canvas');
+  const ctx = canvas.getContext('2d');
+  const width = canvas.width;
+  const height = canvas.height;
+
+  // Ball properties
+  const ball = {
+    x: width / 2,
+    y: height / 2,
+    radius: 30,
+    dx: 4,
+    dy: 3,
+    hue: 0
+  };
+
+  function drawBall() {
+    ctx.beginPath();
+    const gradient = ctx.createRadialGradient(
+      ball.x, ball.y, ball.radius * 0.3,
+      ball.x, ball.y, ball.radius
+    );
+    gradient.addColorStop(0, `hsl(${ball.hue}, 100%, 70%)`);
+    gradient.addColorStop(1, `hsl(${(ball.hue + 60) % 360}, 80%, 40%)`);
+    ctx.fillStyle = gradient;
+    ctx.shadowColor = `hsl(${ball.hue}, 100%, 70%)`;
+    ctx.shadowBlur = 20;
+    ctx.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.closePath();
+  }
+
+  function update() {
+    ctx.clearRect(0, 0, width, height);
+
+    drawBall();
+
+    ball.x += ball.dx;
+    ball.y += ball.dy;
+
+    // Bounce off walls
+    if(ball.x + ball.radius > width || ball.x - ball.radius < 0) {
+      ball.dx = -ball.dx;
+    }
+    if(ball.y + ball.radius > height || ball.y - ball.radius < 0) {
+      ball.dy = -ball.dy;
+    }
+
+    // Change color hue smoothly
+    ball.hue = (ball.hue + 2) % 360;
+
+    requestAnimationFrame(update);
+  }
+
+  update();
+</script>
+</body>
+</html>
